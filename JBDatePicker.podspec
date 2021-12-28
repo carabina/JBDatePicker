@@ -21,11 +21,11 @@ Pod::Spec.new do |s|
 JBDatePicker is a view which shows a month with all of its days. The user can select a date, which is returned as a Date object. It is possible to swipe between months, or manually select them. It is possible to load the datepicker with a specific date selected.
                        DESC
 
-  s.homepage         = 'https://github.com/Tuslareb/JBDatePicker'
+  s.homepage         = 'https://github.com/verebes1/JBDatePicker'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Tuslareb' => 'tuslareb@yahoo.com' }
-  s.source           = { :git => 'https://github.com/Tuslareb/JBDatePicker.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/verebes1/JBDatePicker.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/strafpleiter'
 
   s.ios.deployment_target = '9.0'
