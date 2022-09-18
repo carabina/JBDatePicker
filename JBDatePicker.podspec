@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'JBDatePicker'
-  s.version          = '1.2.5'
+  s.version          = '1.3.0'
   s.summary          = 'A calendar field in which the user can select a date.'
 
 # This description is used to generate tags and improve search results.
@@ -28,7 +28,7 @@ JBDatePicker is a view which shows a month with all of its days. The user can se
   s.source           = { :git => 'https://github.com/verebes1/JBDatePicker.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/strafpleiter'
 
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '11.0'
 
   s.source_files = 'JBDatePicker/Classes/**/*.{swift}'
 
