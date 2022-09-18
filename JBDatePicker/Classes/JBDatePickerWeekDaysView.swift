@@ -52,7 +52,13 @@ public final class JBDatePickerWeekDaysView: UIStackView {
         self.weekdayLabelTextColor = datePickerView.delegate?.colorForWeekDaysViewText
         
         //get weekday name symbols
-        weekdayNameSymbols = Calendar.current.shortWeekdaySymbols
+        var cal = Calendar.current
+        if let preferredLanguage = Bundle.main.preferredLocalizations.first {
+            if datePickerView.delegate?.shouldLocalize == true {
+                cal.locale = Locale(identifier: preferredLanguage)
+            }
+        }
+        weekdayNameSymbols = datePickerView.delegate?.weekdaySymbols(for: cal) ?? cal.shortStandaloneWeekdaySymbols
         
         //adjust order of weekDayNameSymbols if needed
         let firstWeekdayIndex = firstWeekDay.rawValue - 1
@@ -93,13 +99,43 @@ public final class JBDatePickerWeekDaysView: UIStackView {
     }
     
     func updateLayout() {
+        
+        //get preferred font
+        guard let preferredFont = datePickerView.delegate?.fontForWeekDaysViewText else { return }
+        
+        //get preferred size
+        let preferredSize = preferredFont.fontSize
+        let sizeOfFont: CGFloat
+        
+        //calculate fontsize to be used
+        switch preferredSize {
+            case .verySmall: sizeOfFont = min(frame.size.width, frame.size.height) / 4
+            case .small: sizeOfFont = min(frame.size.width, frame.size.height) / 3.5
+            case .medium: sizeOfFont = min(frame.size.width, frame.size.height) / 3
+            case .large: sizeOfFont = min(frame.size.width, frame.size.height) / 2
+            case .veryLarge: sizeOfFont = min(frame.size.width, frame.size.height) / 1.5
+        }
 
-        //update labelsize
-        let sizeOfFont = min(frame.size.width, frame.size.height) / 3
+        //get font to be used
+        let fontToUse: UIFont
+        switch preferredFont.fontName.isEmpty {
+        case true:
+            fontToUse = UIFont.systemFont(ofSize: sizeOfFont, weight: UIFont.Weight.regular)
+        case false:
+            if let customFont = UIFont(name: preferredFont.fontName, size: sizeOfFont) {
+                fontToUse = customFont
+            }
+            else {
+                 print("custom font '\(preferredFont.fontName)' for weekdaysView not available. JBDatePicker will use system font instead")
+                 fontToUse = UIFont.systemFont(ofSize: sizeOfFont, weight: UIFont.Weight.regular)
+            }
+        }
+
+        //set text and font on labels 
         for (index, label) in weekdayLabels.enumerated() {
             
             let labelText = weekdayNameSymbols[index]
-            label.attributedText =  NSMutableAttributedString(string: labelText, attributes:[NSFontAttributeName:UIFont.systemFont(ofSize: sizeOfFont, weight: UIFontWeightRegular)])
+            label.attributedText =  NSMutableAttributedString(string: labelText, attributes:[NSAttributedString.Key.font:fontToUse])
         }
     }
     

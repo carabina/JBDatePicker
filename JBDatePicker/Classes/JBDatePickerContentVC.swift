@@ -105,6 +105,7 @@ class JBDatePickerContentVC: UIViewController, UIScrollViewDelegate {
         let previousMonthView = MonthView(datePickerView: datePickerView, date: firstDateOfPreviousMonth, isPresented: false)
         
         //this is what gives new new monthView it's initial frame
+        previousMonthView.frame = scrollView.frame
         previousMonthView.createWeekViews()
         
         return previousMonthView
@@ -120,6 +121,7 @@ class JBDatePickerContentVC: UIViewController, UIScrollViewDelegate {
         let nextMonthView = MonthView(datePickerView: datePickerView, date: firstDateOfNextMonth, isPresented: false)
         
         //this is what gives new new monthView it's initial frame
+        nextMonthView.frame = scrollView.frame
         nextMonthView.createWeekViews()
         
         return nextMonthView
@@ -292,7 +294,7 @@ class JBDatePickerContentVC: UIViewController, UIScrollViewDelegate {
             
             isPresenting = true
             
-            UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions(), animations: {
+            UIView.animate(withDuration: 0.5, delay: 0, options: UIView.AnimationOptions(), animations: {
                 
                 //animate positions of monthViews
                 previous.frame.origin.x -= self.scrollView.frame.width
@@ -329,7 +331,7 @@ class JBDatePickerContentVC: UIViewController, UIScrollViewDelegate {
             
             isPresenting = true
             
-            UIView.animate(withDuration: 0.5, delay: 0, options: UIViewAnimationOptions(), animations: {
+            UIView.animate(withDuration: 0.5, delay: 0, options: UIView.AnimationOptions(), animations: {
                 
                 //animate positions of monthViews
                 previous.frame.origin.x += self.scrollView.frame.width

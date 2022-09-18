@@ -4,11 +4,11 @@
 #
 # Any lines starting with a # are optional, but their use is encouraged
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
-#
+#/Users/joost/Desktop/JBDatePicker
 
 Pod::Spec.new do |s|
   s.name             = 'JBDatePicker'
-  s.version          = '1.0.0'
+  s.version          = '1.3.0'
   s.summary          = 'A calendar field in which the user can select a date.'
 
 # This description is used to generate tags and improve search results.
@@ -21,17 +21,17 @@ Pod::Spec.new do |s|
 JBDatePicker is a view which shows a month with all of its days. The user can select a date, which is returned as a Date object. It is possible to swipe between months, or manually select them. It is possible to load the datepicker with a specific date selected.
                        DESC
 
-  s.homepage         = 'https://github.com/Tuslareb/JBDatePicker'
+  s.homepage         = 'https://github.com/verebes1/JBDatePicker'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Tuslareb' => 'tuslareb@yahoo.com' }
-  s.source           = { :git => 'https://github.com/Tuslareb/JBDatePicker.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/verebes1/JBDatePicker.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/strafpleiter'
 
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '11.0'
 
-  s.source_files = 'JBDatePicker/Classes/**/*'
-  
+  s.source_files = 'JBDatePicker/Classes/**/*.{swift}'
+
   # s.resource_bundles = {
   #   'JBDatePicker' => ['JBDatePicker/Assets/*.png']
   # }

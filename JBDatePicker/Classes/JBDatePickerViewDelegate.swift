@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol JBDatePickerViewDelegate: class {
+public protocol JBDatePickerViewDelegate: AnyObject {
     
     /**
      Is called when the user selected a day
@@ -26,7 +26,22 @@ public protocol JBDatePickerViewDelegate: class {
      */
     func didPresentOtherMonth(_ monthView: JBDatePickerMonthView)
     
-    
+    /**
+     Is called to check if any particular date is selectable by the picker
+     - parameter date: the date to check if allowed
+     - note:
+     Implementing this method is optional.
+     */
+    func shouldAllowSelectionOfDay(_ date: Date?) -> Bool
+
+    /**
+     Is called when setting up the calendar view as an override point for customization of weekday labels
+     - parameter calendar: calendar instance used by the calendar view
+     - note:
+     Implementing this method is optional.
+     */
+    func weekdaySymbols(for calendar: Calendar) -> [String]
+
     /**
      Sets the day that determines which month is shown on initial load
      - note:
@@ -46,18 +61,64 @@ public protocol JBDatePickerViewDelegate: class {
     /**
      Determines if a month should also show the dates of the previous and next month
      - note:
-     Implementing this variable is optional. It's default is set to true
+     Implementing this variable is optional. It's default is set to true.
      */
     var shouldShowMonthOutDates: Bool {get}
+    
+    /**
+     Determines if the weekday symbols and the month description should follow available localizations
+     - note:
+     Implementing this variable is optional. It's default is set to false. This means that the weekday symbols
+     and the month description will be in the same language as the device language. If you want it to conform to the
+     localization of your app, return true here. If you return true and your app is not localized, the weekday symbols and 
+     the month description will be in the development language.
+     */
+    var shouldLocalize: Bool {get}
+    
+    
+    // MARK: - General appearance properties
     
     /**
      Determines the height ratio of the weekDaysView compared to the total height
      
      - note:
-     Implementing this variable is optional. It's default is set to 0.1 (10%)
+     Implementing this variable is optional. It's default is set to 0.1 (10%).
      
      */
     var weekDaysViewHeightRatio: CGFloat {get}
+    
+    /**
+     Determines the shape that is used to indicate a selected date. Possiblilities are:
+     .circle, .square, .roundedRect
+     
+     - note: 
+     Implementing this variable is optional. It's default is set to .circle.
+     
+     */
+    var selectionShape: JBSelectionShape { get }
+    
+    /**
+     font of the date labels. Defaults to systemfont with a medium size.
+     
+     - Note: you can use any UIFont name you want, as long as it is available. If it's not available, JBDatePicker will
+     use the systemfont instead. If you want to use the systemfont but customize it's size, use an empty string as the
+     fontname.
+     
+     ## Usage Example: ##
+     ````
+     //set custom font
+     var fontForDayLabel: JBFont {
+        return JBFont(name: "AvenirNext-MediumItalic", size: .medium)
+     }
+     
+     //set system font with custom size
+     var fontForDayLabel: JBFont {
+        return JBFont(name: "", size: .large)
+     }
+     
+     ````
+     */
+    var fontForDayLabel: JBFont { get }
     
     
     // MARK: - Text Color appearance properties
@@ -67,6 +128,9 @@ public protocol JBDatePickerViewDelegate: class {
     
     ///color of any date label text that falls out of the presented month and is part of the next or previous (but not presented) month
     var colorForDayLabelOutOfMonth: UIColor { get }
+    
+    ///color of any date label text that occurs outside the allowed selectable days (day earlier than earliest selectable or later than last selectable)
+    var colorForUnavaibleDay: UIColor { get }
     
     ///color of the 'today' date label text
     var colorForCurrentDay: UIColor { get }
@@ -82,6 +146,31 @@ public protocol JBDatePickerViewDelegate: class {
     
     ///color of the labels in the WeekdaysView bar that say 'mon' to 'sun'. Defaults to white.
     var colorForWeekDaysViewText: UIColor { get }
+    
+    
+    /**
+    font of the labels in the WeekdaysView bar that say 'mon' to 'sun'. Defaults to systemfont with 
+     a medium size.
+     
+     - Note: you can use any UIFont name you want, as long as it is available. If it's not available, JBDatePicker will
+     use the systemfont instead. If you want to use the systemfont but customize it's size, use an empty string as the 
+     fontname. 
+     
+     ## Usage Example: ##
+     ````
+     //set custom font
+     var fontForWeekDaysViewText: JBFont {
+        return JBFont(name: "AvenirNext-MediumItalic", size: .medium)
+     }
+     
+     //set system font with custom size
+     var fontForWeekDaysViewText: JBFont {
+        return JBFont(name: "", size: .large)
+     }
+     
+     ````
+     */
+    var fontForWeekDaysViewText: JBFont { get }
     
     
     // MARK: - Selection Color appearance properties
@@ -102,13 +191,14 @@ public protocol JBDatePickerViewDelegate: class {
  */
 public extension JBDatePickerViewDelegate {
     
-    public func didPresentOtherMonth(_ monthView: JBDatePickerMonthView) {}
-    
+    func didPresentOtherMonth(_ monthView: JBDatePickerMonthView) {}
+    func shouldAllowSelectionOfDay(_ date: Date?) -> Bool { return true }
+    func weekdaySymbols(for calendar: Calendar) -> [String] { return calendar.shortStandaloneWeekdaySymbols }
     
     // MARK: - General defaults
     
-    public var dateToShow: Date { return Date()}
-    public var firstWeekDay: JBWeekDay {
+    var dateToShow: Date { return Date()}
+    var firstWeekDay: JBWeekDay {
         
         if let calendarValue = JBWeekDay(rawValue: Calendar.current.firstWeekday){
             return calendarValue
@@ -118,18 +208,23 @@ public extension JBDatePickerViewDelegate {
         }
     }
     
-   public var shouldShowMonthOutDates: Bool { return true }
-   public var weekDaysViewHeightRatio: CGFloat { return 0.1 }
+    var shouldShowMonthOutDates: Bool { return true }
+    var shouldLocalize: Bool { return false }
+    var weekDaysViewHeightRatio: CGFloat { return 0.1 }
+    var selectionShape: JBSelectionShape { return .circle }
+    var fontForDayLabel: JBFont { return JBFont() }
     
     // MARK: - Color defaults
     
-    public var colorForDayLabelInMonth: UIColor { return .darkGray }
-    public var colorForDayLabelOutOfMonth: UIColor { return .lightGray }
-    public var colorForCurrentDay: UIColor { return .red }
-    public var colorForSelelectedDayLabel: UIColor { return .white }
-    public var colorForWeekDaysViewBackground: UIColor { return  UIColor(red: 81.0/255.0, green: 182.0/255.0, blue: 185.0/255.0, alpha: 1.0) }
-    public var colorForWeekDaysViewText: UIColor { return .white }
-    public var colorForSelectionCircleForOtherDate: UIColor { return  UIColor(red: 81.0/255.0, green: 182.0/255.0, blue: 185.0/255.0, alpha: 1.0) }
-    public var colorForSelectionCircleForToday: UIColor { return UIColor(red: 255.0/255.0, green: 98.0/255.0, blue: 89.0/255.0, alpha: 1.0) }
-    public var colorForSemiSelectedSelectionCircle: UIColor { return UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1.0) }
+    var colorForDayLabelInMonth: UIColor { return .darkGray }
+    var colorForDayLabelOutOfMonth: UIColor { return .lightGray }
+    var colorForUnavaibleDay: UIColor { return .lightGray }
+    var colorForCurrentDay: UIColor { return .red }
+    var colorForSelelectedDayLabel: UIColor { return .white }
+    var colorForWeekDaysViewBackground: UIColor { return  UIColor(red: 81.0/255.0, green: 182.0/255.0, blue: 185.0/255.0, alpha: 1.0) }
+    var colorForWeekDaysViewText: UIColor { return .white }
+    var fontForWeekDaysViewText: JBFont { return JBFont() }
+    var colorForSelectionCircleForOtherDate: UIColor { return  UIColor(red: 81.0/255.0, green: 182.0/255.0, blue: 185.0/255.0, alpha: 1.0) }
+    var colorForSelectionCircleForToday: UIColor { return UIColor(red: 255.0/255.0, green: 98.0/255.0, blue: 89.0/255.0, alpha: 1.0) }
+    var colorForSemiSelectedSelectionCircle: UIColor { return UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1.0) }
 }
